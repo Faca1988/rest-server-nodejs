@@ -4,7 +4,7 @@ const _ = require('underscore');
 const app = express();
 const User = require('../models/user');
 
-
+const { verifyToken, verifyRole } = require('../middlewares/authorization');
 
 
 const JSONResponse = (res, err, userdb) => {
@@ -20,9 +20,8 @@ const JSONResponse = (res, err, userdb) => {
     });
 };
 
-app.get('/usuario', function(req, res) {
+app.get('/usuario', verifyToken, (req, res) => {
     // res.json({ name: 'facundo' });
-
     let from = Number(req.query.from || 0);
     let limit = Number(req.query.limit || 5);
 
@@ -37,7 +36,7 @@ app.get('/usuario', function(req, res) {
                 });
             }
 
-            User.count({ state: true }, (err, counting) => {
+            User.countDocuments({ state: true }, (err, counting) => {
                 if (err) {
                     return res.status(400).json({
                         ok: false,
@@ -54,7 +53,7 @@ app.get('/usuario', function(req, res) {
 });
 
 // POST se utiliza para crear nuevos registros
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verifyToken, verifyRole], (req, res) => {
     let body = req.body;
     // let body = _.pick(req.body, ['name', 'email', 'password', 'img', 'role', 'state']);
 
@@ -74,7 +73,7 @@ app.post('/usuario', function(req, res) {
 });
 
 // PUT se utiliza para actualizar registros
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verifyToken, verifyRole], (req, res) => {
 
     let id = req.params.id;
     // let body = req.body;
@@ -88,7 +87,7 @@ app.put('/usuario/:id', function(req, res) {
         (err, userdb) => JSONResponse(res, err, userdb));
 });
 
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', [verifyToken, verifyRole], (req, res) => {
     /*===========================================================================
     =============================================================================
      Este delete elimina un usuario de la Base de datos.
@@ -98,7 +97,7 @@ app.delete('/usuario/:id', function(req, res) {
      ===========================================================================*/
 
     let id = req.params.id;
-    let erase = req.params.erase || false;
+    let erase = req.query.erase || false;
 
     if (erase === true) {
         User.findByIdAndRemove(id, (err, deletedUser) => {
@@ -130,6 +129,4 @@ app.delete('/usuario/:id', function(req, res) {
     }
 });
 
-module.exports = {
-    app
-};
+module.exports = app;

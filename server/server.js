@@ -4,11 +4,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const app = express();
-const userRouter = require('./routes/user').app;
-
 
 const port = process.env.PORT;
-
 
 
 // parse application/x-www-form-urlencoded
@@ -17,7 +14,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-app.use(userRouter);
+// Configuración global de rutas
+app.use(require('./routes/index'));
 
 
 app.get('/', function(req, res) {
