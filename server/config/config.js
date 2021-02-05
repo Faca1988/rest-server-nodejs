@@ -35,7 +35,7 @@ process.env.URLDB = urlDB;
 // ====== Fecha de vencimiento del token =======
 
 // 60 segundo * 60 minutos * 24 hrs * 30 días
-process.env.EXPIRED_TOKEN_AT = 60 * 60 * 24 * 30;
+process.env.EXPIRED_TOKEN_AT = '48h';
 
 // =============================================
 
